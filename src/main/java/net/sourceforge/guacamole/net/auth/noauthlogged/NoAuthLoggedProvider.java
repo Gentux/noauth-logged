@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.noauth;
+package main.java.net.sourceforge.guacamole.net.auth.noauthlogged;
 
 import java.util.Map;
 import java.io.BufferedReader;
@@ -42,6 +42,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.AuthenticationLoggedProviderModule;
+import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.NoAuthLoggedConfigContentHandler;
 
 /**
  * Disable authentication in Guacamole. All users accessing Guacamole are
@@ -68,12 +74,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Laurent Meunier
  */
-public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
+public class NoAuthLoggedProvider extends SimpleAuthenticationProvider {
 
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(NoAuthenticationProvider.class);
+    private Logger logger = LoggerFactory.getLogger(NoAuthLoggedProvider.class);
 
     /**
      * Map of all known configurations, indexed by identifier.
@@ -98,11 +104,11 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
 
         @Override
         public String getName() {
-            return "noauth-config";
+            return "noauthlogged-config";
         }
 
     };
-
+    
     /**
      * The default filename to use for the configuration, if not defined within
      * guacamole.properties.
@@ -118,13 +124,14 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public NoAuthenticationProvider() throws GuacamoleException {
+    public NoAuthLoggedProvider() throws GuacamoleException {
         environment = new LocalEnvironment();
-    }
+
+	}
 
     @Override
     public String getIdentifier() {
-        return "noauth";
+        return "noauthlogged";
     }
 
     /**
@@ -155,7 +162,7 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
         try {
 
             // Set up parser
-            NoAuthConfigContentHandler contentHandler = new NoAuthConfigContentHandler();
+            NoAuthLoggedConfigContentHandler contentHandler = new NoAuthLoggedConfigContentHandler();
 
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setContentHandler(contentHandler);

@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.noauth;
+package main.java.net.sourceforge.guacamole.net.auth.noauthlogged;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Laurent Meunier
  */
-public class NoAuthConfigContentHandler extends DefaultHandler {
+public class NoAuthLoggedConfigContentHandler extends DefaultHandler {
 
     /**
      * Map of all configurations, indexed by name.

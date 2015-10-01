@@ -2,11 +2,11 @@
 
     "guacamoleVersion" : "0.9.8",
 
-    "name"      : "Disabled Authentication",
-    "namespace" : "guac-noauth",
+    "name"      : "Disabled Authentication with log",
+    "namespace" : "guac-noauthlogged",
 
     "authProviders" : [
-        "net.sourceforge.guacamole.net.auth.noauth.NoAuthenticationProvider"
+	"main.java.net.sourceforge.guacamole.net.auth.noauthlogged.NoAuthLoggedProvider"
     ],
 
     "translations" : [
