@@ -14,7 +14,6 @@ import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnection;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionDirectory;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
@@ -22,6 +21,8 @@ import org.glyptodon.guacamole.net.auth.simple.SimpleDirectory;
 import org.glyptodon.guacamole.net.auth.simple.SimpleUser;
 import org.glyptodon.guacamole.net.auth.simple.SimpleUserDirectory;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+
+import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.connection.LoggedConnection;
 
 public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext {
 
@@ -56,7 +57,7 @@ public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext
             GuacamoleConfiguration config = configEntry.getValue();
 
             // Add as simple connection
-            Connection connection = new SimpleConnection(identifier, identifier, config);
+            Connection connection = new LoggedConnection(identifier, identifier, config);
             connection.setParentIdentifier(ROOT_IDENTIFIER);
             connections.add(connection);
 
