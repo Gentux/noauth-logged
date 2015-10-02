@@ -33,6 +33,8 @@ import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.simple.SimpleUserContext;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -43,11 +45,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.AuthenticationLoggedProviderModule;
 import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.NoAuthLoggedConfigContentHandler;
+import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.user.UserContext;
 
 /**
  * Disable authentication in Guacamole. All users accessing Guacamole are
@@ -124,11 +123,18 @@ public class NoAuthLoggedProvider extends SimpleAuthenticationProvider {
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public NoAuthLoggedProvider() throws GuacamoleException {
-        environment = new LocalEnvironment();
-
+	public NoAuthLoggedProvider() throws GuacamoleException {
+		environment = new LocalEnvironment();
 	}
+    
+    @Override
+    public UserContext getUserContext(AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
+    	Map<String, GuacamoleConfiguration> config = getAuthorizedConfigurations(authenticatedUser.getCredentials());
+    	
+    	return new UserContext(this, authenticatedUser, config);
+    }
+    
     @Override
     public String getIdentifier() {
         return "noauthlogged";
