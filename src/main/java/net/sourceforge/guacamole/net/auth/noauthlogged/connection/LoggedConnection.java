@@ -1,5 +1,11 @@
 package main.java.net.sourceforge.guacamole.net.auth.noauthlogged.connection;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.glyptodon.guacamole.GuacamoleException;
@@ -47,8 +53,47 @@ public class LoggedConnection extends SimpleConnection {
             // Only run once
             if (!hasRun.compareAndSet(false, true))
                 return;
-        	
-        	System.err.print("It works !!!");
+
+			HttpURLConnection connection = null;
+			try {
+				// Create connection
+				URL url = new URL("http://127.0.0.1:8081");
+				
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestMethod("POST");
+				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+				String urlParameters = "nanocloud=rocks&hello=bonjour";
+
+				connection.setUseCaches(false);
+				connection.setDoOutput(true);
+
+				// Send request
+				DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+				writer.writeBytes(urlParameters);
+				writer.close();
+
+				// Get Response
+				InputStream input = connection.getInputStream();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+				StringBuilder response = new StringBuilder();
+				
+				String line;
+				while ((line = reader.readLine()) != null) {
+					response.append(line);
+					response.append('\r');
+				}
+				reader.close();
+
+				System.err.print(response.toString());
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (connection != null) {
+					connection.disconnect();
+				}
+			}
 
         }
 
