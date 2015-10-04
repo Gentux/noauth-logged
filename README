@@ -4,25 +4,16 @@
 ------------------------------------------------------------
 
 This README is intended to provide quick and to-the-point documentation for
-technical users intending to compile parts of Guacamole themselves.
-
-Distribution-specific packages are available from the files section of the main
-project page:
-
-    http://sourceforge.net/projects/guacamole/files/
-
-Distribution-specific documentation is provided on the Guacamole wiki:
-
-    http://guac-dev.org/
-
+technical users intending to noauth-logged plugin for Guacamole themselves.
 
 ------------------------------------------------------------
- What is guacamole-auth-noauth?
+ What is guacamole-auth-noauthlogged?
 ------------------------------------------------------------
 
-guacamole-auth-noauth is a Java library for use with the Guacamole web
+guacamole-auth-noauthlogged is a Java library for use with the Guacamole web
 application which removes all authentication. It provides a static set of
-connections to anyone using the web application.
+connections to anyone using the web application. It also perform an HTTP call
+on socket closure, allowing to log session history.
 
 Beware that with authentication disabled, any person with access to your
 Guacamole server will have access to any connections it provides. The login
@@ -31,10 +22,10 @@ it is not compatible with your version of Guacamole.
 
 
 ------------------------------------------------------------
- Compiling and installing guacamole-auth-noauth
+ Compiling and installing guacamole-auth-noauthlogged
 ------------------------------------------------------------
 
-guacamole-auth-noauth is built using Maven. Building guacamole-auth-noauth
+guacamole-auth-noauthlogged is built using Maven. Building guacamole-auth-noauthlogged
 compiles all classes and packages them into a redistributable .jar file. This
 .jar file can be installed in the library directory configured in
 guacamole.properties such that the authentication provider is available.
@@ -59,6 +50,24 @@ guacamole.properties such that the authentication provider is available.
     If you do not have a library directory configured in your
     guacamole.properties, you will need to specify one. The directory
     is specified using the "lib-directory" property.
+
+------------------------------------------------------------
+ Configuring guacamole-auth-noauthlogged
+------------------------------------------------------------
+
+1) The repo comes with a Dockerfile and a docker-compose to both
+   build and run the environment. Fist, you must create some directory
+   in current folder.
+   Note: These could be symbolic links
+
+   - war: must contain guacamole war file
+   - guac_home: must contain guacamole configuration
+
+2) Build plugin with "docker-compose run guacamole-noauthlogged-build mvn package"
+
+------------------------------------------------------------
+ Configuring guacamole-auth-noauthlogged
+------------------------------------------------------------
 
 3) Write a noauth-config.xml file containing all desired connections
 
@@ -104,14 +113,4 @@ guacamole.properties such that the authentication provider is available.
     container as well.
 
     You must restart Tomcat before any of the above changes can take effect.
-
-
-------------------------------------------------------------
- Reporting problems
-------------------------------------------------------------
-
-Please report any bugs encountered by opening a new ticket at the Trac system
-hosted at:
-
-    http://guac-dev.org/trac/
-
+    (If using docker, run "docker-compose run guacamole-noauthlogged-build catalina.sh run")
