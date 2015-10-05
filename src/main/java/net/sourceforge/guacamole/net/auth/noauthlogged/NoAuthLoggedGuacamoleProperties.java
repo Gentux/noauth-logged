@@ -22,6 +22,7 @@
 
 package main.java.net.sourceforge.guacamole.net.auth.noauthlogged;
 
+import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
 import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
 
 /**
@@ -48,10 +49,20 @@ public class NoAuthLoggedGuacamoleProperties {
     /**
      * The URL of the MySQL server hosting the guacamole authentication tables.
      */
-    public static final StringGuacamoleProperty NOAUTHLOGGED_SERVERPORT = new StringGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty NOAUTHLOGGED_SERVERPORT = new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "noauthlogged-server-port"; }
+
+    };
+
+    /**
+     * The URL of the MySQL server hosting the guacamole authentication tables.
+     */
+    public static final StringGuacamoleProperty NOAUTHLOGGED_SERVERENDPOINT = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "noauthlogged-server-endpoint"; }
 
     };
 

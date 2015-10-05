@@ -63,8 +63,9 @@ public class LoggedConnection extends SimpleConnection {
 			try {
 				Environment env = new LocalEnvironment();
 				String serverURL = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERURL);
-				String serverPort = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPORT);
-				URL url = new URL("http://" + serverURL + ":" + serverPort);
+				Integer serverPort = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPORT);
+				String serverEndpoint = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERENDPOINT);
+				URL url = new URL("http", serverURL, serverPort, serverEndpoint);
 
 				http = (HttpURLConnection) url.openConnection();
 				http.setRequestMethod("POST");
