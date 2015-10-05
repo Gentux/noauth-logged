@@ -20,6 +20,7 @@ import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
+import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.NoAuthLoggedGuacamoleProperties;
 import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.tunnel.ManagedInetGuacamoleSocket;
 import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.tunnel.ManagedSSLGuacamoleSocket;
 
@@ -60,8 +61,10 @@ public class LoggedConnection extends SimpleConnection {
 
 			HttpURLConnection http = null;
 			try {
-				// Create connection
-				URL url = new URL("http://127.0.0.1:8081");
+				Environment env = new LocalEnvironment();
+				String serverURL = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERURL);
+				String serverPort = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPORT);
+				URL url = new URL("http://" + serverURL + ":" + serverPort);
 
 				http = (HttpURLConnection) url.openConnection();
 				http.setRequestMethod("POST");
@@ -75,7 +78,7 @@ public class LoggedConnection extends SimpleConnection {
 				http.setUseCaches(false);
 				http.setDoOutput(true);
 
-				// Send request
+				// Send request (for some reason we actually need to wait for response)
 				DataOutputStream writer = new DataOutputStream(http.getOutputStream());
 				writer.writeBytes(urlParameters);
 				writer.close();
@@ -91,8 +94,6 @@ public class LoggedConnection extends SimpleConnection {
 					response.append('\r');
 				}
 				reader.close();
-
-				System.err.print(response.toString());
 
 			} catch (Exception e) {
 				e.printStackTrace();
