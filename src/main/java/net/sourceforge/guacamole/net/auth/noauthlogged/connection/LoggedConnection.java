@@ -2,12 +2,21 @@ package main.java.net.sourceforge.guacamole.net.auth.noauthlogged.connection;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
@@ -20,7 +29,6 @@ import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
-import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.NoAuthLoggedGuacamoleProperties;
 import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.tunnel.ManagedInetGuacamoleSocket;
 import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.tunnel.ManagedSSLGuacamoleSocket;
 
@@ -35,7 +43,7 @@ public class LoggedConnection extends SimpleConnection {
 
 		this.config = config;
 	}
-
+	
     /**
      * Task which handles cleanup of a connection associated with some given
      * ActiveConnectionRecord.
@@ -51,7 +59,38 @@ public class LoggedConnection extends SimpleConnection {
         public ConnectionCleanupTask(ActiveConnectionRecord connection) {
         	this.connection = connection;
         }
+        
+        private String login() throws IOException {
+			URL myUrl = new URL("http://192.168.1.38:8081/login");	
+			HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
+			urlConn.setInstanceFollowRedirects(false);
 
+			urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			String urlParameters = "email=romain@soufflet.io" +
+					"&password=test";
+
+			urlConn.setUseCaches(false);
+			urlConn.setDoOutput(true);
+			// Send request (for some reason we actually need to wait for response)
+			DataOutputStream writer = new DataOutputStream(urlConn.getOutputStream());
+			writer.writeBytes(urlParameters);
+			writer.close();
+			
+			urlConn.connect();
+			urlConn.getOutputStream().close(); 
+			
+			String cookie = null;
+			String headerName=null;
+			for (int i=1; (headerName = urlConn.getHeaderFieldKey(i))!=null; i++) {              
+				if (headerName.equals("Set-Cookie")) {
+			 		cookie = urlConn.getHeaderField(i);
+				}
+			}
+			
+			System.err.println(cookie);
+			return cookie;
+        }
+        
         @Override
         public void run() {
 
@@ -59,33 +98,39 @@ public class LoggedConnection extends SimpleConnection {
             if (!hasRun.compareAndSet(false, true))
                 return;
 
-			HttpURLConnection http = null;
-			try {
-				Environment env = new LocalEnvironment();
-				String serverURL = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERURL);
-				Integer serverPort = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPORT);
-				String serverEndpoint = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERENDPOINT);
-				URL url = new URL("http", serverURL, serverPort, serverEndpoint);
+            try {
+            	String cookie = login();
+            	
+    			URL myUrl = new URL("http://192.168.1.38:8081/rpc");	
+    			HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
+    			urlConn.setInstanceFollowRedirects(false);
+    			urlConn.setRequestProperty("Cookie", cookie);
 
-				http = (HttpURLConnection) url.openConnection();
-				http.setRequestMethod("POST");
-				http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+    			urlConn.setRequestProperty("Content-Type", "application/json");
+    			JsonObject params = Json.createObjectBuilder()
+    					  .add("jsonrpc", "2.0")
+    					  .add("method", "ServiceHistory.Add")
+    					  .add("id", "1")
+    					  .add("params", Json.createArrayBuilder()
+    					    .add(Json.createObjectBuilder()
+    					      .add("UserId", this.connection.getConnectionName())
+    					      .add("ConnectioniD", this.connection.getConnectionName())
+    					      .add("StartDate", this.connection.getStartDate().toString())
+    					      .add("EndDate", new Date().toString())))
+    					  .build();
 
-				String urlParameters = "UserId=" + this.connection.getUsername() +
-						"&ConnectioniD=" + this.connection.getConnectionName() +
-						"&StartDate=" + this.connection.getStartDate() +
-						"&EndDate=" + new Date();
-
-				http.setUseCaches(false);
-				http.setDoOutput(true);
-
-				// Send request (for some reason we actually need to wait for response)
-				DataOutputStream writer = new DataOutputStream(http.getOutputStream());
-				writer.writeBytes(urlParameters);
-				writer.close();
-
+    			urlConn.setUseCaches(false);
+    			urlConn.setDoOutput(true);
+    			// Send request (for some reason we actually need to wait for response)
+    			DataOutputStream writer = new DataOutputStream(urlConn.getOutputStream());
+    			writer.writeBytes(params.toString());
+    			writer.close();
+    			
+    			urlConn.connect();
+    			urlConn.getOutputStream().close(); 
+    			
 				// Get Response
-				InputStream input = http.getInputStream();
+				InputStream input = urlConn.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 				StringBuilder response = new StringBuilder();
 
@@ -95,13 +140,11 @@ public class LoggedConnection extends SimpleConnection {
 					response.append('\r');
 				}
 				reader.close();
+			System.err.println(response.toString());
 
-			} catch (Exception e) {
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} finally {
-				if (http != null) {
-					http.disconnect();
-				}
 			}
 
         }

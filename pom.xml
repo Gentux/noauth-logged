@@ -88,29 +88,13 @@
             <version>0.9.8</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- MyBatis -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.2.8</version>
-        </dependency>
         
-        <!-- MyBatis Guice -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-guice</artifactId>
-            <version>3.6</version>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
-        </dependency>
-
-        <!-- Guacamole JDBC Authentication -->
+	    <!-- JSON -->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.0.4</version>
+		</dependency>
     </dependencies>
 
 </project>
