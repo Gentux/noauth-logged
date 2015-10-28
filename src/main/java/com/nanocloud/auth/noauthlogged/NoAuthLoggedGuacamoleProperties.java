@@ -37,7 +37,7 @@ public class NoAuthLoggedGuacamoleProperties {
     private NoAuthLoggedGuacamoleProperties() {}
 
     /**
-     * The URL of the MySQL server hosting the guacamole authentication tables.
+     * The URL of the logging server containing connection history
      */
     public static final StringGuacamoleProperty NOAUTHLOGGED_SERVERURL = new StringGuacamoleProperty() {
 
@@ -45,9 +45,9 @@ public class NoAuthLoggedGuacamoleProperties {
         public String getName() { return "noauthlogged-server-url"; }
 
     };
-    
-    /**
-     * The URL of the MySQL server hosting the guacamole authentication tables.
+
+     /**
+     * The port of the logging server containing connection history
      */
     public static final IntegerGuacamoleProperty NOAUTHLOGGED_SERVERPORT = new IntegerGuacamoleProperty() {
 
@@ -57,12 +57,32 @@ public class NoAuthLoggedGuacamoleProperties {
     };
 
     /**
-     * The URL of the MySQL server hosting the guacamole authentication tables.
+     * The endpoint on the logging server where history are sent
      */
     public static final StringGuacamoleProperty NOAUTHLOGGED_SERVERENDPOINT = new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "noauthlogged-server-endpoint"; }
+
+    };
+
+    /**
+     * The username of the user which will perform the log request to the API
+     */
+    public static final StringGuacamoleProperty NOAUTHLOGGED_SERVERUSERNAME = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "noauthlogged-server-username"; }
+
+    };
+
+    /**
+     * The password of the user which will perform the log request to the API
+     */
+    public static final StringGuacamoleProperty NOAUTHLOGGED_SERVERPASSWORD = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "noauthlogged-server-password"; }
 
     };
 
