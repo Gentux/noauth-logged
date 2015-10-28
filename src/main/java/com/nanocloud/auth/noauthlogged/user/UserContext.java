@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import com.nanocloud.auth.noauthlogged.connection.LoggedConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
@@ -21,8 +22,6 @@ import org.glyptodon.guacamole.net.auth.simple.SimpleDirectory;
 import org.glyptodon.guacamole.net.auth.simple.SimpleUser;
 import org.glyptodon.guacamole.net.auth.simple.SimpleUserDirectory;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
-
-import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.connection.LoggedConnection;
 
 public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext {
 
