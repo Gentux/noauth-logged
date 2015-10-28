@@ -1,4 +1,4 @@
-package main.java.net.sourceforge.guacamole.net.auth.noauthlogged.user;
+package com.nanocloud.auth.noauthlogged.user;
 
 import java.util.ArrayList;
 import java.util.Collection;

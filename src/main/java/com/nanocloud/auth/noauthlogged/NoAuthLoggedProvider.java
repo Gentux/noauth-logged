@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package main.java.net.sourceforge.guacamole.net.auth.noauthlogged;
+package com.nanocloud.auth.noauthlogged
 
 import java.util.Map;
 import java.io.BufferedReader;

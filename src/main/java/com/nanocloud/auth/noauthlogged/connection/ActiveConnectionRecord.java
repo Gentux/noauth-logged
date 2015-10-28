@@ -1,4 +1,4 @@
-package main.java.net.sourceforge.guacamole.net.auth.noauthlogged.connection;
+package com.nanocloud.auth.noauthlogged.connection;
 
 import java.util.Date;
 

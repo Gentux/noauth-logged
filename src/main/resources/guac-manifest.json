@@ -6,7 +6,7 @@
     "namespace" : "guac-noauthlogged",
 
     "authProviders" : [
-	"main.java.net.sourceforge.guacamole.net.auth.noauthlogged.NoAuthLoggedProvider"
+	    "com.nanocloud.auth.noauthlogged.NoAuthLoggedProvider"
     ],
 
     "translations" : [

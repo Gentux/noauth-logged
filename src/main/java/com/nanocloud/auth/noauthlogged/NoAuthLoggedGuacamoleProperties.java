@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package main.java.net.sourceforge.guacamole.net.auth.noauthlogged;
+package com.nanocloud.auth.noauthlogged;
 
 import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
 import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
