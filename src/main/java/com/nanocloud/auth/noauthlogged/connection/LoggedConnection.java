@@ -5,18 +5,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.CookieHandler;
-import java.net.CookieManager;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
+
+import com.nanocloud.auth.noauthlogged.NoAuthLoggedGuacamoleProperties;
+import com.nanocloud.auth.noauthlogged.tunnel.ManagedInetGuacamoleSocket;
+import com.nanocloud.auth.noauthlogged.tunnel.ManagedSSLGuacamoleSocket;
 
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
@@ -25,15 +23,20 @@ import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.SimpleGuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnection;
+import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
-
-import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.tunnel.ManagedInetGuacamoleSocket;
-import main.java.net.sourceforge.guacamole.net.auth.noauthlogged.tunnel.ManagedSSLGuacamoleSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggedConnection extends SimpleConnection {
-	
+
+	/**
+	 * Logger for this class.
+	 */
+	private Logger logger = LoggerFactory.getLogger(LoggedConnection.class);
+
     /**
      * Backing configuration, containing all sensitive information.
      */
@@ -54,20 +57,33 @@ public class LoggedConnection extends SimpleConnection {
          * Whether this task has run.
          */
         private final AtomicBoolean hasRun = new AtomicBoolean(false);
+		private final String hostname;
+		private final Integer port;
+		private final String endpoint;
+		private final String username;
+		private final String password;
 		private ActiveConnectionRecord connection;
 
-        public ConnectionCleanupTask(ActiveConnectionRecord connection) {
+        public ConnectionCleanupTask(ActiveConnectionRecord connection) throws GuacamoleException {
         	this.connection = connection;
+
+			Environment env = new LocalEnvironment();
+
+			hostname = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERURL, "localhost");
+			port = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPORT, 80);
+			endpoint = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERENDPOINT, "/rpc");
+			username = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERUSERNAME);
+			password = env.getProperty(NoAuthLoggedGuacamoleProperties.NOAUTHLOGGED_SERVERPASSWORD);
         }
-        
+
         private String login() throws IOException {
-			URL myUrl = new URL("http://192.168.1.38:8081/login");	
+			URL myUrl = new URL("http://" + hostname + ":" + port + "/login");
 			HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
 			urlConn.setInstanceFollowRedirects(false);
 
 			urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			String urlParameters = "email=romain@soufflet.io" +
-					"&password=test";
+			String urlParameters = "email=" + username +
+					"&password=" + password;
 
 			urlConn.setUseCaches(false);
 			urlConn.setDoOutput(true);
@@ -98,10 +114,12 @@ public class LoggedConnection extends SimpleConnection {
             if (!hasRun.compareAndSet(false, true))
                 return;
 
+			logger.info("Trying to log history to " + hostname + ":" + port + "/" + endpoint + " with user " + username);
+
             try {
             	String cookie = login();
-            	
-    			URL myUrl = new URL("http://192.168.1.38:8081/rpc");	
+
+				URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint);
     			HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
     			urlConn.setInstanceFollowRedirects(false);
     			urlConn.setRequestProperty("Cookie", cookie);
