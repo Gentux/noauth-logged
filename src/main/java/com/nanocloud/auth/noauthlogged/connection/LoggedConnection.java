@@ -102,11 +102,10 @@ public class LoggedConnection extends SimpleConnection {
 			 		cookie = urlConn.getHeaderField(i);
 				}
 			}
-			
-			System.err.println(cookie);
+
 			return cookie;
         }
-        
+
         @Override
         public void run() {
 
@@ -158,7 +157,8 @@ public class LoggedConnection extends SimpleConnection {
 					response.append('\r');
 				}
 				reader.close();
-			System.err.println(response.toString());
+
+				logger.info("History transmitted to API");
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
