@@ -121,7 +121,7 @@ public class LoggedConnection extends SimpleConnection {
 				e.printStackTrace();
 			}
 
-			URL myUrl = new URL("https://" + hostname + ":" + port + "/oauth/token");
+			URL myUrl = new URL("http://" + hostname + ":" + port + "/oauth/token");
 			HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
 			//urlConn.setInstanceFollowRedirects(false);
 
@@ -186,7 +186,7 @@ public class LoggedConnection extends SimpleConnection {
             try {
 				String token = login();
 
-				URL myUrl = new URL("https://" + hostname + ":" + port + "/" + endpoint);
+				URL myUrl = new URL("http://" + hostname + ":" + port + "/" + endpoint);
     			HttpURLConnection urlConn = (HttpURLConnection)myUrl.openConnection();
     			urlConn.setInstanceFollowRedirects(false);
 				urlConn.setRequestProperty("Authorization", "Bearer " + token);
